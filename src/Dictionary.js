@@ -53,7 +53,7 @@ if (loaded){
             <Results results={results}/>
              </div>
     );
-      }else {
+      } else {
         load();
         return "Loading";
       }}
