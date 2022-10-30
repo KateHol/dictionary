@@ -1,39 +1,59 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Results from "./Results";
+import Photos from "./Photos";
 import "./Dictionary.css";
 
-export default function Dictionary() {
-  let [keyword, setKeyword] = useState("");
+export default function Dictionary(props) {
+  let [keyword, setKeyword] = useState(props.defaultKeyword);
   let [results, setResults] = useState(null);
+  let [loaded, setLoaded] = useState(false);
   
 
 
-  function handleResponse(response) {
+  function handleDictionResponse(response) {
     setResults(response.data[0]);
   }
 
  
-  function search(event) {
+  function search() {
+    let apiUrl = `https://api.dictionaryapi.dev/api/v2/entries/en_US/${keyword}`;
+    axios.get(apiUrl).then(handleDictionResponse);
+  }
+
+  function handleSubmit(event){
     event.preventDefault();
-     let apiUrl = `https://api.dictionaryapi.dev/api/v2/entries/en_US/${keyword}`;
-    axios.get(apiUrl).then(handleResponse);
+    search();
   }
  
     function handleKeywordChange(event) {
     setKeyword(event.target.value);
   }
+  function load(){
+    setLoaded(true);
+    search();
+  }
 
-
+if (loaded){
     return (
       <div className="Dictionary">
-          <form onSubmit={search}>
+        <section>
+            <h1>What word do you want to find?</h1>
+          <form onSubmit={handleSubmit}>
             <input
               type="search"
               onChange={handleKeywordChange}
+              defaultValue={props.defaultKeyword}
                   />
           </form>
-         <Results results={results} />
+          <div className="hint">
+            suggested words: sky, world, key, tree...
             </div>
+            </section>
+            <Results results={results}/>
+             </div>
     );
-  }
+      }else {
+        load();
+        return "Loading";
+      }}
